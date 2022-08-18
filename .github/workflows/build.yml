@@ -100,7 +100,7 @@ jobs:
       fail-fast: false
       matrix:
         target: [win64]
-        variant: [gpl,lgpl,gpl-shared,lgpl-shared]
+        variant: [gpl,lgpl,gpl-shared,lgpl-shared,nonfree,nonfree-shared]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -144,7 +144,7 @@ jobs:
       fail-fast: false
       matrix:
         target: [win64]
-        variant: [gpl,lgpl,gpl-shared,lgpl-shared]
+        variant: [gpl,lgpl,gpl-shared,lgpl-shared,nonfree,nonfree-shared]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
