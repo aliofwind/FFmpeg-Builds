@@ -18,6 +18,7 @@ ffbuild_dockerbuild() {
         --disable-examples
         --disable-tools
         --disable-docs
+        --disable-unit-tests
         --enable-vp9-highbitdepth
         --prefix="$FFBUILD_PREFIX"
     )
@@ -50,6 +51,9 @@ ffbuild_dockerbuild() {
     ./configure "${myconf[@]}"
     make -j$(nproc)
     make install
+
+    # Work around strip breaking LTO symbol index
+    "$RANLIB" "$FFBUILD_PREFIX"/lib/libvpx.a
 }
 
 ffbuild_configure() {
