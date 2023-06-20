@@ -9,8 +9,7 @@ ffbuild_enabled() {
 }
 
 ffbuild_dockerbuild() {
-    git-mini-clone "$SCRIPT_REPO" "$SCRIPT_COMMIT" libx11
-    cd libx11
+    cd "$FFBUILD_DLDIR/$SELF"
 
     autoreconf -i
 

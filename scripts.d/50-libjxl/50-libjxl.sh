@@ -9,10 +9,13 @@ ffbuild_enabled() {
     return 0
 }
 
+ffbuild_dockerdl() {
+    default_dl "$SELF"
+    to_df "RUN git -C \"$SELF\" submodule update --init --recursive --depth 1 --recommend-shallow third_party/highway third_party/skcms"
+}
+
 ffbuild_dockerbuild() {
-    git-mini-clone "$SCRIPT_REPO" "$SCRIPT_COMMIT" jxl
-    cd jxl
-    git submodule update --init --recursive --depth 1 --recommend-shallow third_party/{highway,skcms}
+    cd "$FFBUILD_DLDIR/$SELF"
 
     mkdir build && cd build
 
