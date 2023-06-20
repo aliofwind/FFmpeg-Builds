@@ -11,10 +11,13 @@ ffbuild_enabled() {
     return 0
 }
 
+ffbuild_dockerdl() {
+    default_dl "$SELF"
+    to_df "RUN git -C \"$SELF\" submodule update --init --recursive"
+}
+
 ffbuild_dockerbuild() {
-    git-mini-clone "$SCRIPT_REPO" "$SCRIPT_COMMIT" placebo
-    cd placebo
-    git submodule update --init --recursive
+    cd "$FFBUILD_DLDIR/$SELF"
 
     mkdir build && cd build
 

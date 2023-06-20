@@ -7,9 +7,12 @@ ffbuild_enabled() {
     return 0
 }
 
+ffbuild_dockerdl() {
+    to_df "RUN retry-tool sh -c \"rm -rf openmpt && svn checkout '${SCRIPT_REPO}@${SCRIPT_REV}' openmpt\""
+}
+
 ffbuild_dockerbuild() {
-    retry-tool sh -c "rm -rf openmpt && svn checkout '${SCRIPT_REPO}@${SCRIPT}' openmpt"
-    cd openmpt
+    cd "$FFBUILD_DLDIR"/openmpt
 
     local myconf=(
         PREFIX="$FFBUILD_PREFIX"
