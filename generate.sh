@@ -3,6 +3,8 @@ set -e
 cd "$(dirname "$0")"
 source util/vars.sh
 
+export LC_ALL=C.UTF-8
+
 rm -f Dockerfile Dockerfile.{dl,final,dl.final}
 
 layername() {
@@ -41,33 +43,23 @@ to_df "FROM ${REGISTRY}/${REPO}/base:latest AS base"
 to_df "ENV TARGET=$TARGET VARIANT=$VARIANT REPO=$REPO ADDINS_STR=$ADDINS_STR"
 to_df "WORKDIR \$FFBUILD_DLDIR"
 
-PREVLAYER="base"
-for ID in $(ls -1d scripts.d/??-* | sed -s 's|^.*/\(..\).*|\1|' | sort -u); do
-    LAYER="layer-$ID"
-
-    for STAGE in scripts.d/$ID-*; do
-        if [[ -f "$STAGE" ]]; then
-            to_df "FROM $PREVLAYER AS $(layername "$STAGE")"
-            exec_dockerstage_dl "$STAGE"
-        else
-            for STAGE in "${STAGE}"/??-*; do
-                to_df "FROM $PREVLAYER AS $(layername "$STAGE")"
-                exec_dockerstage_dl "$STAGE"
-            done
-        fi
-    done
+for STAGE in scripts.d/*.sh scripts.d/*/*.sh; do
+    to_df "FROM base AS $(layername "$STAGE")"
+    exec_dockerstage_dl "$STAGE"
 done
 
 to_df "FROM base AS intermediate"
 cat Dockerfile.dl.final >> "$TODF"
 rm Dockerfile.dl.final
 
-to_df "FROM base"
-to_df "COPY --from=intermediate \$FFBUILD_DLDIR/. \$FFBUILD_DLDIR"
+to_df "FROM scratch"
+to_df "COPY --from=intermediate /opt/ffdl/. /"
 
 if [[ "$TARGET" == "dl" && "$VARIANT" == "only" ]]; then
     exit 0
 fi
+
+DL_IMAGE="${DL_IMAGE_RAW}:$(./util/get_dl_cache_tag.sh)"
 
 ###
 ### Generate main Dockerfile
@@ -78,7 +70,10 @@ exec_dockerstage() {
     (
         SELF="$SCRIPT"
         source "$SCRIPT"
+
         ffbuild_enabled || exit 0
+
+        to_df "ENV SELF=\"$SELF\""
         ffbuild_dockerstage || exit $?
     )
 }

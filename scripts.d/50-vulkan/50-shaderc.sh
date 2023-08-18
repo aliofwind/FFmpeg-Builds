@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/google/shaderc.git"
-SCRIPT_COMMIT="95ea3c915aa48ecdeda2f14db73983d1be3f9209"
+SCRIPT_COMMIT="e166325b24d79d64bfa47065328890ce116ea642"
 
 ffbuild_enabled() {
     [[ $ADDINS_STR == *4.4* ]] && return -1

@@ -63,7 +63,11 @@ jobs:
           cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache
           cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache
       - name: Generate download cache Dockerfile
-        run: ./generate.sh dl only
+        id: dl_cache
+        run: |
+          ./generate.sh dl only
+          echo "dltagname=$(./util/get_dl_cache_tag.sh)" >> $GITHUB_OUTPUT
+          cat Dockerfile.dl
       - name: Build download cache image
         uses: docker/build-push-action@v3
         with:
@@ -71,7 +75,7 @@ jobs:
           file: Dockerfile.dl
           pull: true
           push: true
-          tags: ${{ steps.imagename.outputs.dlname }}:latest
+          tags: ${{ steps.imagename.outputs.dlname }}:${{ steps.dl_cache.outputs.dltagname }}
           cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.dlname }}:cache
           cache-from: type=registry,ref=${{ steps.imagename.outputs.dlname }}:cache
       - name: Cleanup
@@ -95,7 +99,8 @@ jobs:
           repository_owner: ${{ github.repository_owner }}
           repository: ${{ github.repository }}
           owner_type: user
-          untagged_only: true
+          untagged_only: false
+          keep_latest: 20
   build_target_bases:
     name: Build target base image
     if: ${{ github.event.inputs.buildOnly != 'true' }}
@@ -124,6 +129,7 @@ jobs:
           IMG="${GITHUB_REPOSITORY,,}/base-${{ matrix.target }}"
           echo "name=ghcr.io/${IMG/ /-}" >> $GITHUB_OUTPUT
           echo "rawname=${IMG/ /-}" >> $GITHUB_OUTPUT
+          echo "gh_repo=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
       - name: Stop Commands
         run: T="$(echo -n ${{ github.token }} | sha256sum | head -c 64)" && echo -e "::add-mask::${T}\n::stop-commands::${T}"
       - name: Build target base image
@@ -135,6 +141,8 @@ jobs:
           tags: ${{ steps.imagename.outputs.name }}:latest
           cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache
           cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache
+          build-args: |
+            GH_REPO=ghcr.io/${{ steps.imagename.outputs.gh_repo }}
       - name: Cleanup
         if: ${{ env.HAVE_CLEANUP_PAT == 'true' }}
         continue-on-error: true
@@ -177,7 +185,6 @@ jobs:
           IMG="${GITHUB_REPOSITORY,,}/${{ matrix.target }}-${{ matrix.variant }}"
           echo "name=ghcr.io/${IMG/ /-}" >> $GITHUB_OUTPUT
           echo "rawname=${IMG/ /-}" >> $GITHUB_OUTPUT
-          echo "gh_repo=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
       - name: Stop Commands
         run: T="$(echo -n ${{ github.token }} | sha256sum | head -c 64)" && echo -e "::add-mask::${T}\n::stop-commands::${T}"
       - name: Build target base image
@@ -189,8 +196,6 @@ jobs:
           tags: ${{ steps.imagename.outputs.name }}:latest
           cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache
           cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache
-          build-args: |
-            GH_REPO=ghcr.io/${{ steps.imagename.outputs.gh_repo }}
       - name: Cleanup
         if: ${{ env.HAVE_CLEANUP_PAT == 'true' }}
         continue-on-error: true
