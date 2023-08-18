@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://git.code.sf.net/p/mingw-w64/mingw-w64.git"
-SCRIPT_COMMIT="b38a7d3e8016d920f02aad09187e4a5f6ae46246"
+SCRIPT_COMMIT="e89de847dd3e05bb8e46344378ce3e124f4e7d1c"
 
 ffbuild_enabled() {
     [[ $TARGET == win* ]] || return -1
