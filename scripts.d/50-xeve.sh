@@ -8,9 +8,6 @@ ffbuild_enabled() {
     return 0
 }
 
-ffbuild_dockerdl() {
-    to_df "RUN git clone \"$SCRIPT_REPO\" \"$SELF\" && git -C \"$SELF\" checkout \"$SCRIPT_COMMIT\""
-}
 
 ffbuild_dockerbuild() {
     cd "$FFBUILD_DLDIR/$SELF"
