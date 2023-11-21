@@ -14,7 +14,7 @@ ffbuild_dockerbuild() {
 
     mkdir build && cd build
 
-    cmake .. -G "MinGW Makefiles"
+    cmake ..
     make -j$(nproc)
     make install
 }
