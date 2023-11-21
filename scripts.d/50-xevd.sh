@@ -23,9 +23,9 @@ ffbuild_dockerbuild() {
 }
 
 ffbuild_configure() {
-    echo --enable-libxeve
+    echo --enable-libxevd
 }
 
 ffbuild_unconfigure() {
-    echo --disable-libxeve
+    echo --disable-libxevd
 }
