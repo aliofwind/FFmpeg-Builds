@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT_REPO="https://github.com/mpeg5/xeve.git"
+SCRIPT_REPO="https://github.com/mpeg5/xevd.git"
 SCRIPT_COMMIT="cebfd5c0350ebcab0e08840af3a35b5a2773563b"
 
 ffbuild_enabled() {
