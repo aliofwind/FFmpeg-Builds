@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/AviSynth/AviSynthPlus.git"
-SCRIPT_COMMIT="d2b7c666ac7bcffe4845af91e3120ae95cc0ee77"
+SCRIPT_COMMIT="85057371294405f745f5c51b7a39fa0e3fdde821"
 
 ffbuild_enabled() {
     [[ $VARIANT == lgpl* ]] && return -1
@@ -9,8 +9,6 @@ ffbuild_enabled() {
 }
 
 ffbuild_dockerbuild() {
-    cd "$FFBUILD_DLDIR/$SELF"
-
     # their version check is insistant on a tag to exist, so make one
     git tag -a ffbuild -m "FFbuild Version"
 
