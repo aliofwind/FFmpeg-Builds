@@ -23,6 +23,7 @@ ffbuild_dockerbuild() {
         --disable-cli
         --enable-pic
         --prefix="$FFBUILD_PREFIX"
+        --bit-depth=10
     )
 
     if [[ $TARGET == win* || $TARGET == linux* ]]; then
