@@ -1,15 +1,18 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/xiph/opus.git"
-SCRIPT_COMMIT="c85499757c148fede8604cffa12454206b6138ba"
+SCRIPT_COMMIT="95dbea83486b90256785aa3c75dd2827f591a34c"
 
 ffbuild_enabled() {
     return 0
 }
 
-ffbuild_dockerbuild() {
-    ./autogen.sh
+ffbuild_dockerdl() {
+    default_dl .
+    echo "./autogen.sh"
+}
 
+ffbuild_dockerbuild() {
     local myconf=(
         --prefix="$FFBUILD_PREFIX"
         --disable-shared
