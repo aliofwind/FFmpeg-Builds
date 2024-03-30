@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/Netflix/vmaf.git"
-SCRIPT_COMMIT="71f0f8d2b60c2bfbae53719b84eae6a7ea89255a"
+SCRIPT_COMMIT="dea9a7704a976d19aa13dc8b3d47759ce7105a85"
 
 ffbuild_enabled() {
     return 0
@@ -33,7 +33,7 @@ ffbuild_dockerbuild() {
         return -1
     fi
 
-    meson "${myconf[@]}" ../libvmaf
+    meson "${myconf[@]}" ../libvmaf || cat meson-logs/meson-log.txt
     ninja -j"$(nproc)"
     ninja install
 
