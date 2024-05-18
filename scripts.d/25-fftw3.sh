@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/FFTW/fftw3.git"
-SCRIPT_COMMIT="d0ce926f1523d95daed48cd7c69572e068dbbfb3"
+SCRIPT_COMMIT="394fa85ab5f8914b82b3404844444c53f5c7f095"
 
 ffbuild_enabled() {
     return 0
@@ -37,6 +37,8 @@ ffbuild_dockerbuild() {
         echo "Unknown target"
         return -1
     fi
+
+    sed -i 's/windows.h/process.h/' configure.ac
 
     ./bootstrap.sh "${myconf[@]}"
     make -j$(nproc)

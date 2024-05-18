@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/harfbuzz/harfbuzz.git"
-SCRIPT_COMMIT="fb6d4d27d67e32084a50e3d8ad8b3743861ff24b"
+SCRIPT_COMMIT="ba1f194a1d62164be439a7f1f8ed9a87da9f7061"
 
 ffbuild_enabled() {
     return 0
@@ -29,6 +29,8 @@ ffbuild_dockerbuild() {
     ./autogen.sh "${myconf[@]}"
     make -j$(nproc)
     make install
+
+    echo "Libs.private: -lpthread" >> "$FFBUILD_PREFIX"/lib/pkgconfig/harfbuzz.pc
 }
 
 ffbuild_configure() {

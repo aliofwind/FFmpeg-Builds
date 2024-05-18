@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://bitbucket.org/multicoreware/x265_git.git"
-SCRIPT_COMMIT="74abf80c70a3969fca2e112691cecfb50c0c2259"
+SCRIPT_COMMIT="53afbf5f5d6f8c081e3c56a9884eecf3e6e583bb"
 
 ffbuild_enabled() {
     [[ $VARIANT == lgpl* ]] && return -1
@@ -45,7 +45,7 @@ EOF
         mv ../10bit/libx265.a ../8bit/libx265_main10.a
         mv libx265.a libx265_main.a
 
-        ${FFBUILD_CROSS_PREFIX}ar -M <<EOF
+        ${AR} -M <<EOF
 CREATE libx265.a
 ADDLIB libx265_main.a
 ADDLIB libx265_main10.a

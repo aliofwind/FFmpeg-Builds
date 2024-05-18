@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/Netflix/vmaf.git"
-SCRIPT_COMMIT="6d77a020ee4af32c854b6029bd64922bef95f1f6"
+SCRIPT_COMMIT="b24c3d685617e7a38b1521a2731d360240f13081"
 
 ffbuild_enabled() {
     return 0
@@ -33,7 +33,7 @@ ffbuild_dockerbuild() {
         return -1
     fi
 
-    meson "${myconf[@]}" ../libvmaf
+    meson "${myconf[@]}" ../libvmaf || cat meson-logs/meson-log.txt
     ninja -j"$(nproc)"
     ninja install
 
@@ -42,6 +42,7 @@ ffbuild_dockerbuild() {
 
 ffbuild_configure() {
     [[ $ADDINS_STR == *4.4* ]] && return 0
+    [[ $ADDINS_STR == *5.0* ]] && return 0
     echo --enable-libvmaf
 }
 
