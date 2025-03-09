@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://bitbucket.org/multicoreware/x265_git.git"
-SCRIPT_COMMIT="dd594f59d95198c6d8e4133b6002c18e47e7d6fe"
+SCRIPT_COMMIT="bc608a559a730aa7e2d9490edc4ee0eab704f59c"
 
 ffbuild_enabled() {
     [[ $VARIANT == lgpl* ]] && return -1
@@ -20,6 +20,7 @@ ffbuild_dockerbuild() {
         -DENABLE_SHARED=OFF
         -DENABLE_CLI=OFF
         -DCMAKE_ASM_NASM_FLAGS=-w-macro-params-legacy
+        -DENABLE_ALPHA=ON
     )
 
     if [[ $TARGET != *32 ]]; then

@@ -57,6 +57,9 @@ ffbuild_ffver() {
     *7.0*)
         echo 700
         ;;
+    *7.1*)
+        echo 701
+        ;;
     *)
         echo 99999999
         ;;
@@ -73,11 +76,11 @@ ffbuild_dockerstage() {
 }
 
 ffbuild_dockerlayer() {
-    to_df "COPY --from=${SELFLAYER} \$FFBUILD_PREFIX/. \$FFBUILD_PREFIX"
+    to_df "COPY --link --from=${SELFLAYER} \$FFBUILD_PREFIX/. \$FFBUILD_PREFIX"
 }
 
 ffbuild_dockerfinal() {
-    to_df "COPY --from=${PREVLAYER} \$FFBUILD_PREFIX/. \$FFBUILD_PREFIX"
+    to_df "COPY --link --from=${PREVLAYER} \$FFBUILD_PREFIX/. \$FFBUILD_PREFIX"
 }
 
 ffbuild_configure() {
