@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://gitlab.freedesktop.org/pulseaudio/pulseaudio.git"
-SCRIPT_COMMIT="3e2bb8a1ece02ae4e2c217273c9c0929cb9f5cae"
+SCRIPT_COMMIT="98c7c9eafb148c6e66e5fe178fc156b00f3bf51a"
 
 ffbuild_enabled() {
     [[ $TARGET == linux* ]] || return 1
@@ -47,12 +47,12 @@ ffbuild_dockerbuild() {
 
     meson "${myconf[@]}" ..
     ninja -j"$(nproc)"
-    ninja install
+    DESTDIR="$FFBUILD_DESTDIR" ninja install
 
-    rm -r "$FFBUILD_PREFIX"/share
+    rm -r "$FFBUILD_DESTPREFIX"/share
 
-    echo "Libs.private: -ldl -lrt -liconv" >> "$FFBUILD_PREFIX"/lib/pkgconfig/libpulse.pc
-    echo "Libs.private: -ldl -lrt -liconv" >> "$FFBUILD_PREFIX"/lib/pkgconfig/libpulse-simple.pc
+    echo "Libs.private: -ldl -lrt -liconv" >> "$FFBUILD_DESTPREFIX"/lib/pkgconfig/libpulse.pc
+    echo "Libs.private: -ldl -lrt -liconv" >> "$FFBUILD_DESTPREFIX"/lib/pkgconfig/libpulse-simple.pc
 }
 
 ffbuild_configure() {

@@ -1,15 +1,10 @@
 #!/bin/bash
 
-SCRIPT_REPO="https://github.com/sekrit-twc/zimg.git"
-SCRIPT_COMMIT="0e56801f98db3e363c974fca794fa06022d40ee4"
+SCRIPT_REPO="https://gitlab.freedesktop.org/freetype/freetype.git"
+SCRIPT_COMMIT="aa2ee67b3d95585a0bfc56a834544a502853f584"
 
 ffbuild_enabled() {
     return 0
-}
-
-ffbuild_dockerdl() {
-    default_dl .
-    echo "git submodule update --init --recursive --depth=1"
 }
 
 ffbuild_dockerbuild() {
@@ -19,7 +14,6 @@ ffbuild_dockerbuild() {
         --prefix="$FFBUILD_PREFIX"
         --disable-shared
         --enable-static
-        --with-pic
     )
 
     if [[ $TARGET == win* || $TARGET == linux* ]]; then
@@ -34,12 +28,14 @@ ffbuild_dockerbuild() {
     ./configure "${myconf[@]}"
     make -j$(nproc)
     make install DESTDIR="$FFBUILD_DESTDIR"
+
+    echo "Libs.private: -lharfbuzz" >> "$FFBUILD_DESTPREFIX"/lib/pkgconfig/freetype2.pc
 }
 
 ffbuild_configure() {
-    echo --enable-libzimg
+    echo --enable-libfreetype
 }
 
 ffbuild_unconfigure() {
-    echo --disable-libzimg
+    echo --disable-libfreetype
 }

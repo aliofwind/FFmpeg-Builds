@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/openssl/openssl.git"
-SCRIPT_COMMIT="openssl-3.2.4"
+SCRIPT_COMMIT="openssl-3.2.5"
 SCRIPT_TAGFILTER="openssl-3.2.*"
 
 ffbuild_enabled() {
@@ -89,7 +89,7 @@ EOF
     sed -i -e "/^CFLAGS=/s|=.*|=${CFLAGS}|" -e "/^LDFLAGS=/s|=[[:space:]]*$|=${LDFLAGS}|" Makefile
 
     make -j$(nproc) build_sw
-    make install_sw
+    make install_sw DESTDIR="$FFBUILD_DESTDIR"
 }
 
 ffbuild_configure() {

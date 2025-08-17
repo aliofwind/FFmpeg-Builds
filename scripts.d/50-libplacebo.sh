@@ -1,19 +1,16 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://code.videolan.org/videolan/libplacebo.git"
-SCRIPT_COMMIT="02f4f9862395d0379a0ec654345f52daf81e1aee"
+SCRIPT_COMMIT="8f86f7a5cab0569fb03a271fa058f84bd8a70331"
 
 ffbuild_enabled() {
-    [[ $ADDINS_STR == *4.4* ]] && return -1
-    [[ $ADDINS_STR == *5.0* ]] && return -1
-    [[ $ADDINS_STR == *5.1* ]] && return -1
-    [[ $ADDINS_STR == *6.0* ]] && return -1
+    (( $(ffbuild_ffver) > 600 )) || return -1
     return 0
 }
 
 ffbuild_dockerdl() {
     default_dl .
-    echo "git submodule update --init --recursive"
+    echo "git submodule update --init --recursive --depth=1 --filter=blob:none"
 }
 
 ffbuild_dockerbuild() {
@@ -53,9 +50,9 @@ ffbuild_dockerbuild() {
 
     meson "${myconf[@]}" ..
     ninja -j$(nproc)
-    ninja install
+    DESTDIR="$FFBUILD_DESTDIR" ninja install
 
-    echo "Libs.private: -lstdc++" >> "$FFBUILD_PREFIX"/lib/pkgconfig/libplacebo.pc
+    echo "Libs.private: -lstdc++" >> "$FFBUILD_DESTPREFIX"/lib/pkgconfig/libplacebo.pc
 }
 
 ffbuild_configure() {
