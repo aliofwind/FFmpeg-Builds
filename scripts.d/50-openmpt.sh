@@ -1,7 +1,14 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://source.openmpt.org/svn/openmpt/trunk/OpenMPT"
-SCRIPT_REV="23987"
+SCRIPT_REV="24178"
+
+ffbuild_depends() {
+    echo base
+    echo zlib
+    echo libogg
+    echo libvorbis
+}
 
 ffbuild_enabled() {
     [[ $TARGET == winarm64 ]] && return -1
