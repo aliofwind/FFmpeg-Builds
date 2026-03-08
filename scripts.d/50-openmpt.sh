@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SCRIPT_REPO="https://source.openmpt.org/svn/openmpt/trunk/OpenMPT"
-SCRIPT_REV="24335"
+SCRIPT_REPO="https://github.com/OpenMPT/openmpt.git"
+SCRIPT_COMMIT="345cc52ff5d5932b10a78ea1c7e3e79618ed16bb"
 
 ffbuild_depends() {
     echo base
@@ -13,10 +13,6 @@ ffbuild_depends() {
 ffbuild_enabled() {
     [[ $TARGET == winarm64 ]] && return -1
     return 0
-}
-
-ffbuild_dockerdl() {
-    echo "retry-tool sh -c \"rm -rf openmpt && svn checkout '${SCRIPT_REPO}@${SCRIPT_REV}' openmpt\" && cd openmpt"
 }
 
 ffbuild_dockerbuild() {

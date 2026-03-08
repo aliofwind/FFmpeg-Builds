@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://gitlab.freedesktop.org/pulseaudio/pulseaudio.git"
-SCRIPT_COMMIT="eee0e8f22fdcb2fd4fbfa4311df7e5070239d435"
+SCRIPT_COMMIT="b096704c0d42c5e784deb781a07b23cfb5286a82"
 
 ffbuild_depends() {
     echo base
@@ -36,10 +36,10 @@ ffbuild_dockerbuild() {
         --default-library=static
         -Ddaemon=false
         -Dclient=true
-        -Ddoxygen=false
+        -Ddoxygen=disabled
         -Dgcov=false
         -Dman=false
-        -Dtests=false
+        -Dtests=disabled
         -Dipv6=true
         -Dopenssl=enabled
     )

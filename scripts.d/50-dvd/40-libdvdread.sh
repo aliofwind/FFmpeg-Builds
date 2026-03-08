@@ -1,15 +1,11 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://code.videolan.org/videolan/libdvdread.git"
-SCRIPT_COMMIT="e5a227a664ece9be728fd0cf251bb137679d6664"
+SCRIPT_COMMIT="e294cf7156ce8170ebb6786e21c4baf7aa5f48e4"
 
 ffbuild_enabled() {
     [[ $VARIANT == lgpl* ]] && return -1
-    [[ $ADDINS_STR == *4.4* ]] && return -1
-    [[ $ADDINS_STR == *5.0* ]] && return -1
-    [[ $ADDINS_STR == *5.1* ]] && return -1
-    [[ $ADDINS_STR == *6.0* ]] && return -1
-    [[ $ADDINS_STR == *6.1* ]] && return -1
+    (( $(ffbuild_ffver) >= 700 )) || return -1
     return 0
 }
 
@@ -45,10 +41,6 @@ ffbuild_configure() {
 }
 
 ffbuild_unconfigure() {
-    [[ $ADDINS_STR == *4.4* ]] && return 0
-    [[ $ADDINS_STR == *5.0* ]] && return 0
-    [[ $ADDINS_STR == *5.1* ]] && return 0
-    [[ $ADDINS_STR == *6.0* ]] && return 0
-    [[ $ADDINS_STR == *6.1* ]] && return 0
+    (( $(ffbuild_ffver) >= 700 )) || return 0
     echo --disable-libdvdread
 }

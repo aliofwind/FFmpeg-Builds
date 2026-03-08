@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/lv2/lv2.git"
-SCRIPT_COMMIT="b02b868091a4c83cf0d2200d7a5daf43cdf2284a"
+SCRIPT_COMMIT="86a8bb5d103f749017e6288dbce9bbe981ed9955"
 
 ffbuild_enabled() {
     return 0
@@ -15,7 +15,6 @@ ffbuild_dockerbuild() {
         --buildtype=release
         --default-library=static
         -Ddocs=disabled
-        -Dplugins=disabled
         -Dtests=disabled
         -Donline_docs=false
     )
