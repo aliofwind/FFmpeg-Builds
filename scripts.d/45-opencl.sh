@@ -1,10 +1,10 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/KhronosGroup/OpenCL-Headers.git"
-SCRIPT_COMMIT="dfb5284280a7a0bce6a21c057184ef653d9e21c1"
+SCRIPT_COMMIT="6fe718c31a45fe25151362a72ef041c3a1047cbd"
 
 SCRIPT_REPO2="https://github.com/KhronosGroup/OpenCL-ICD-Loader.git"
-SCRIPT_COMMIT2="c987c97918e26de669ad3ae8229b21a6d8be6748"
+SCRIPT_COMMIT2="b7bd2803acc779c03d96588e9ca9e9568a18698a"
 
 ffbuild_enabled() {
     return 0
@@ -21,8 +21,6 @@ ffbuild_dockerbuild() {
 
     cd loader
     mkdir build && cd build
-
-    export CFLAGS="$CFLAGS -DDllMain=OpenCL_DllMain"
 
     cmake -DCMAKE_TOOLCHAIN_FILE="$FFBUILD_CMAKE_TOOLCHAIN" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$FFBUILD_PREFIX" \
         -DOPENCL_ICD_LOADER_HEADERS_DIR="$FFBUILD_DESTPREFIX"/include -DOPENCL_ICD_LOADER_BUILD_SHARED_LIBS=OFF \

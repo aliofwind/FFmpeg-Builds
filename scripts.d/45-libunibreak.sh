@@ -1,25 +1,20 @@
 #!/bin/bash
 
-SCRIPT_REPO="https://github.com/xiph/vorbis.git"
-SCRIPT_COMMIT="1c5f57a2c42ddac91e5c5bb70eb4c56099d442a9"
-
-ffbuild_depends() {
-    echo base
-    echo libogg
-}
+SCRIPT_REPO="https://github.com/adah1972/libunibreak.git"
+SCRIPT_COMMIT="3ce4bfa3129ff3738046a44a6db533d2ce25af2b"
 
 ffbuild_enabled() {
     return 0
 }
 
 ffbuild_dockerbuild() {
-    ./autogen.sh
+    bash ./bootstrap
 
     local myconf=(
         --prefix="$FFBUILD_PREFIX"
         --disable-shared
         --enable-static
-        --disable-oggtest
+        --with-pic
     )
 
     if [[ $TARGET == win* || $TARGET == linux* ]]; then
@@ -34,12 +29,4 @@ ffbuild_dockerbuild() {
     ./configure "${myconf[@]}"
     make -j$(nproc)
     make install DESTDIR="$FFBUILD_DESTDIR"
-}
-
-ffbuild_configure() {
-    echo --enable-libvorbis
-}
-
-ffbuild_unconfigure() {
-    echo --disable-libvorbis
 }

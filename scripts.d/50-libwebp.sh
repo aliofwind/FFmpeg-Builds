@@ -1,13 +1,16 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://chromium.googlesource.com/webm/libwebp"
-SCRIPT_COMMIT="45102247a82396fabac5241c64305b13ed711335"
+SCRIPT_COMMIT="6178b1db7e5564da10c1ad41ea3a52706fd9dcd1"
 
 ffbuild_enabled() {
     return 0
 }
 
 ffbuild_dockerbuild() {
+    # Remove broken internal library that depends on things we disable
+    sed -i '/libanim_util/d' examples/Makefile.am
+
     ./autogen.sh
 
     local myconf=(
@@ -16,8 +19,8 @@ ffbuild_dockerbuild() {
         --enable-static
         --with-pic
         --enable-libwebpmux
+        --enable-libwebpdemux
         --disable-libwebpextras
-        --disable-libwebpdemux
         --disable-sdl
         --disable-gl
         --disable-png
