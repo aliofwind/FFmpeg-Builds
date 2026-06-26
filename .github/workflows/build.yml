@@ -27,12 +27,19 @@ jobs:
   build_base:
     name: Build base image
     if: ${{ github.event.inputs.buildOnly != 'true' }}
-    runs-on: ubuntu-latest
+    needs: pre_check
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            tag_suffix: ''
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Free Disk-Space
         run: df -h && sudo apt-get clean && docker system prune -a -f && sudo rm -rf /opt/ghc /usr/local/.ghcup /usr/local/lib/android && df -h
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Install buildx
         uses: docker/setup-buildx-action@v4
         with:
@@ -59,9 +66,9 @@ jobs:
           pull: true
           push: true
           provenance: false
-          tags: ${{ steps.imagename.outputs.name }}:latest${{ (contains(matrix.runner, 'arm') && '-arm') || '' }}
-          cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache${{ (contains(matrix.runner, 'arm') && '-arm') || '' }}
-          cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache${{ (contains(matrix.runner, 'arm') && '-arm') || '' }}
+          tags: ${{ steps.imagename.outputs.name }}:latest${{ matrix.tag_suffix || '' }}
+          cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache${{ matrix.tag_suffix || '' }}
+          cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache${{ matrix.tag_suffix || '' }}
       - name: Get download cache key
         if: ${{ !cancelled() && !contains(matrix.runner, 'arm') }}
         id: dl_cache
@@ -103,16 +110,17 @@ jobs:
     name: Build target base image
     if: ${{ github.event.inputs.buildOnly != 'true' }}
     needs: build_base
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner || 'ubuntu-latest' }}
     strategy:
       fail-fast: false
       matrix:
+        runner: [ubuntu-latest]
         target: [win64]
     steps:
       - name: Free Disk-Space
         run: df -h && sudo apt-get clean && docker system prune -a -f && sudo rm -rf /opt/ghc /usr/local/.ghcup /usr/local/lib/android && df -h
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Install buildx
         uses: docker/setup-buildx-action@v4
         with:
@@ -140,11 +148,12 @@ jobs:
           pull: true
           push: true
           provenance: false
-          tags: ${{ steps.imagename.outputs.name }}:latest
-          cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache
-          cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache
+          tags: ${{ steps.imagename.outputs.name }}:latest${{ matrix.tag_suffix || '' }}
+          cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache${{ matrix.tag_suffix || '' }}
+          cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache${{ matrix.tag_suffix || '' }}
           build-args: |
             GH_REPO=ghcr.io/${{ steps.imagename.outputs.gh_repo }}
+            BASE_TAG_SUFFIX=${{ matrix.tag_suffix || '' }}
       - name: Cleanup
         continue-on-error: true
         uses: BtbN/delete-untagged-ghcr-action@main
@@ -159,17 +168,25 @@ jobs:
     name: Build target-variant image
     if: ${{ github.event.inputs.buildOnly != 'true' }}
     needs: build_target_bases
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner || 'ubuntu-latest' }}
     strategy:
       fail-fast: false
       matrix:
+        runner: [ubuntu-latest]
         target: [win64]
         variant: [nonfree,nonfree-shared]
+        include:
+          - runner: ubuntu-latest
+            target: win64
+            variant: nonfree
+          - runner: ubuntu-latest
+            target: win64
+            variant: nonfree-shared
     steps:
       - name: Free Disk-Space
         run: df -h && sudo apt-get clean && docker system prune -a -f && sudo rm -rf /opt/ghc /usr/local/.ghcup /usr/local/lib/android && df -h
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Install buildx
         uses: docker/setup-buildx-action@v4
         with:
@@ -190,11 +207,11 @@ jobs:
       - name: Get download cache key
         id: dl_cache
         run: |
-          echo "dltagname=$(./util/get_dl_cache_tag.sh)" >> $GITHUB_OUTPUT
+          echo "dltagname=$(DOCKER_TAG_SUFFIX=${{ matrix.tag_suffix || '' }} ./util/get_dl_cache_tag.sh)" >> $GITHUB_OUTPUT
       - name: Stop Commands
         run: T="$(echo -n ${{ github.token }} | sha256sum | head -c 64)" && echo -e "::add-mask::${T}\n::stop-commands::${T}"
       - name: Generate Dockerfile
-        run: ./generate.sh ${{ matrix.target }} ${{ matrix.variant }}
+        run: DOCKER_TAG_SUFFIX=${{ matrix.tag_suffix || '' }} ./generate.sh ${{ matrix.target }} ${{ matrix.variant }}
       - name: Cache
         uses: actions/cache/restore@v5
         with:
@@ -208,9 +225,9 @@ jobs:
           pull: true
           push: true
           provenance: false
-          tags: ${{ steps.imagename.outputs.name }}:latest
-          cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache
-          cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache
+          tags: ${{ steps.imagename.outputs.name }}:latest${{ matrix.tag_suffix || '' }}
+          cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache${{ matrix.tag_suffix || '' }}
+          cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache${{ matrix.tag_suffix || '' }}
       - name: Cleanup
         continue-on-error: true
         uses: BtbN/delete-untagged-ghcr-action@main
@@ -235,7 +252,7 @@ jobs:
       - name: Free Disk-Space
         run: df -h && sudo apt-get clean && docker system prune -a -f && sudo rm -rf /opt/ghc /usr/local/.ghcup /usr/local/lib/android && df -h
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Login to Docker
         uses: docker/login-action@v4
         with:
@@ -265,7 +282,7 @@ jobs:
       - name: Free Disk-Space
         run: df -h && sudo apt-get clean && docker system prune -a -f && sudo rm -rf /opt/ghc /usr/local/.ghcup /usr/local/lib/android && df -h
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Download artifacts
         uses: actions/download-artifact@v8
         with:
