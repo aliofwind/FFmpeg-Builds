@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/AviSynth/AviSynthPlus.git"
-SCRIPT_COMMIT="f72f22620f2fbd4423aa4cbb51d5e400bf2ee08f"
+SCRIPT_COMMIT="de1d1fc0d69e6d308235491b24b8e9b26ac023ff"
 
 ffbuild_enabled() {
     [[ $VARIANT == lgpl* ]] && return -1

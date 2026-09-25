@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/uclouvain/openjpeg.git"
-SCRIPT_COMMIT="21b70b0d62807e270994f94302e323da4f0d776b"
+SCRIPT_COMMIT="402ef5862195b177ea0a7788f2a6ef2804e62285"
 
 ffbuild_enabled() {
     return 0

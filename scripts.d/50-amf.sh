@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/GPUOpen-LibrariesAndSDKs/AMF.git"
-SCRIPT_COMMIT="eadd00804d5f7e5cd8c85d540073198312870776"
+SCRIPT_COMMIT="c35f613aea2e5057a688c979e75b1cf24253297e"
 
 ffbuild_enabled() {
     return 0

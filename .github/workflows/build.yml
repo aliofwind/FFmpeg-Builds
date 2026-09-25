@@ -97,7 +97,7 @@ jobs:
           echo "dltagname=$(./util/get_dl_cache_tag.sh)" >> $GITHUB_OUTPUT
       - name: Cache
         if: ${{ !cancelled() && !contains(matrix.runner, 'arm') }}
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: .cache/downloads
           key: download-cache-${{ steps.dl_cache.outputs.dltagname }}
@@ -234,7 +234,7 @@ jobs:
       - name: Generate Dockerfile
         run: DOCKER_TAG_SUFFIX=${{ matrix.tag_suffix || '' }} ./generate.sh ${{ matrix.target }} ${{ matrix.variant }}
       - name: Cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: .cache/downloads
           key: download-cache-${{ steps.dl_cache.outputs.dltagname }}
@@ -319,7 +319,8 @@ jobs:
           NAME="Auto-Build $RELDATE"
           TAGNAME="autobuild-$(date +'%Y-%m-%d-%H-%M')"
           (cd artifacts && sha256sum *.{zip,tar.xz} > checksums.sha256)
-          gh release create "$TAGNAME" --target "master" --title "$NAME" artifacts/*.{zip,tar.xz} artifacts/checksums.*
+          ./util/release_body.sh "$TAGNAME" artifacts/*.{zip,tar.xz} > release_body.md
+          gh release create "$TAGNAME" --target "master" --title "$NAME" --notes-file release_body.md artifacts/*.{zip,tar.xz} artifacts/checksums.*
           echo "tag_name=${TAGNAME}" >> $GITHUB_OUTPUT
           echo "rel_date=${RELDATE}" >> $GITHUB_OUTPUT
         env:
@@ -328,13 +329,15 @@ jobs:
         run: |
           set -xe
           shopt -s nullglob
-          mkdir latest_artifacts
-          ./util/repack_latest.sh latest_artifacts artifacts/*.{zip,tar.xz}
+          mkdir latest_artifacts worktmpdir
+          sudo mount -o size=75%,uid="${UID}" -t tmpfs tmpfs ./worktmpdir
+          (cd worktmpdir && ../util/repack_latest.sh ../latest_artifacts ../artifacts/*.{zip,tar.xz})
           (cd latest_artifacts && sha256sum *.{zip,tar.xz} > checksums.sha256)
           NAME="Latest Auto-Build (${{ steps.create_release.outputs.rel_date }})"
           TAGNAME="latest"
+          ./util/release_body.sh "$TAGNAME" latest_artifacts/*.{zip,tar.xz} > latest_body.md
           gh release delete --cleanup-tag --yes "$TAGNAME" || true
           sleep 15
-          gh release create "$TAGNAME" --target "master" --title "$NAME" latest_artifacts/*
+          gh release create "$TAGNAME" --target "master" --title "$NAME" --notes-file latest_body.md latest_artifacts/*
         env:
           GITHUB_TOKEN: ${{ github.token }}
